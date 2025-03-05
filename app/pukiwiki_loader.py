@@ -2,7 +2,7 @@ import os
 from openai import OpenAI
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
-from .config import config
+from config import config
 
 api_key = config.OPENAI_API_KEY
 

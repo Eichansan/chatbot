@@ -1,6 +1,6 @@
 from openai import AsyncOpenAI
-from .vector_store import search_similar_documents
-from .config import config
+from vector_store import search_similar_documents
+from config import config
 
 api_key = config.OPENAI_API_KEY
 client = AsyncOpenAI(api_key=api_key)

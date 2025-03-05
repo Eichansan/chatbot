@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from .rag_service import handle_query
+from rag_service import handle_query
 
 app = FastAPI()
 

@@ -2,7 +2,7 @@
 
 ## 事前準備
 以下のコマンドをインストールしてください。(必要なコマンドがあればリンクを追記してください)
-- [Taskfile](https://taskfile.dev/ja-JP/installation/)
+- [Taskfile](https://taskfile.dev/installation/)
 
 ## インストール
 

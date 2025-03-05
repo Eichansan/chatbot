@@ -1,7 +1,7 @@
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
 from openai import OpenAI
-from .config import config
+from config import config
 
 api_key = config.OPENAI_API_KEY
 qdrant = QdrantClient("qdrant", port=6333)
