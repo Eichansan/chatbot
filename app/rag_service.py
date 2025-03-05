@@ -3,6 +3,7 @@ from .vector_store import search_similar_documents
 from .config import config
 
 api_key = config.OPENAI_API_KEY
+client = AsyncOpenAI(api_key=api_key)
 
 async def handle_query(query):
     docs = search_similar_documents(query)
@@ -14,6 +15,7 @@ async def handle_query(query):
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": query}
     ]
+    # TODO: ローカルLLM使うならここを変える
 
     async for chunk in client.chat.completions.create(
         model="gpt-4o",
