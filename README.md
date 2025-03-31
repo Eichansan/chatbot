@@ -6,22 +6,38 @@
 
 ## インストール
 
-```sh
+```bash
 task install
 ```
 
 ## 起動
 
-```sh
+```bash
 task up
 ```
 
+## 実行
+
+- wiki下にexample.txtを配置
+
+- ベクトルDB（Qdrant）に保存（仮）
+
+```bash
+python app/vector_store.py
+```
+
+- 実行（仮）
+
+```bash
+python app/main.py
+```
+
 ## 停止
-```sh
+```bash
 task stop
 ```
 
 ## 削除
-```sh
+```bash
 task down
 ```

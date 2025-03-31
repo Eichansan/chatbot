@@ -1,21 +1,70 @@
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from .rag_service import handle_query
+from config import Config
+import ollama
+import qdrant_client
 
-app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+qdrant = qdrant_client.QdrantClient(Config.QDRANT_HOST, port=Config.QDRANT_PORT)
 
-@app.get("/chat")
-async def chat_stream(query: str):
-    async def event_stream():
-        async for chunk in handle_query(query):
-            yield f"data: {chunk}\n\n"
-        yield "data: [DONE]\n\n"
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
+def vectorize_text(text):
+    """テキストをベクトル化"""
+    response = ollama.embeddings(
+        model=Config.OLLAMA_EMBEDDINGS_MODEL,
+        prompt=text
+    )
+    return response["embedding"]
+
+def rag_search(question):
+    """質問に最も関連する回答を取得"""
+    # 質問をベクトル化
+    question_vector = vectorize_text(question)
+
+    # Qdrant で検索
+    results = qdrant.search(
+        collection_name=Config.QDRANT_COLLECTION,
+        query_vector=question_vector,
+        limit=1
+    )
+
+    if results:
+        best_match = results[0]
+        answer = best_match.payload["text"]
+        prompt = f"""
+        次の質問について、情報を基に簡潔に回答して下さい。
+        # 質問
+        {question}
+
+        # 情報
+        {answer}
+            
+        # 回答
+        """
+        return prompt
+    else:
+        return "適切な回答が見つかりませんでした。"
+
+def generate_response(prompt, model="phi3:3.8b-mini-4k-instruct-q5_K_M"):
+    try:
+        stream = ollama.generate(
+            model=model,
+            prompt=prompt,
+            stream=True
+        )
+        
+        response = ""
+        for chunk in stream:
+            c = chunk['response']
+            print(c, end='', flush=True)
+            response += c
+        
+        return response
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
+if __name__ == '__main__':
+    question1 = "VPN接続の方法は？"
+    print(f"質問: {question1}")
+    prompt = rag_search(question1)
+    print(f"プロンプト: {prompt}")
+    response = generate_response(prompt)
+    print(f"\n回答: {response}")

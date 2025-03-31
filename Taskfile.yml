@@ -5,16 +5,13 @@ vars:
   DOCKER_COMPOSE_FILE: docker-compose.yml
 
 tasks:
-  dev:
-    desc: "Start FastAPI in local development mode"
-    cmds:
-      - uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   install:
     desc: "Build Docker images"
     cmds:
-      - if [ ! -f .env ]; then cp .env.example .env; fi
       - docker compose -f {{.DOCKER_COMPOSE_FILE}} up --build -d
+      - docker exec -it ollama ollama run phi3:3.8b-mini-4k-instruct-q5_K_M
+      - docker exec -it ollama ollama pull mxbai-embed-large
 
   up:
     desc: "Start the Docker containers"
@@ -30,14 +27,3 @@ tasks:
     desc: "Down the Docker containers"
     cmds:
       - docker compose -f {{.DOCKER_COMPOSE_FILE}} down
-
-  clean:
-    desc: "Remove Docker containers, volumes, and images"
-    cmds:
-      - docker compose -f {{.DOCKER_COMPOSE_FILE}} down -v
-      - docker system prune -af
-
-  logs:
-    desc: "Show logs for FastAPI container"
-    cmds:
-      - docker logs -f {{.PROJECT_NAME}}_app_1
