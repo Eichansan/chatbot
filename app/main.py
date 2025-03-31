@@ -22,19 +22,19 @@ def rag_search(question):
     results = qdrant.search(
         collection_name=Config.QDRANT_COLLECTION,
         query_vector=question_vector,
-        limit=1
+        limit=3
     )
+    print(f"検索結果: {results}")
 
     if results:
-        best_match = results[0]
-        answer = best_match.payload["text"]
+        context = "\n\n".join([f"{i+1}. {hit.payload['text']}" for i, hit in enumerate(results)])
         prompt = f"""
-        次の質問について、情報を基に簡潔に回答して下さい。
+        次の質問について、3つの情報を基に簡潔に回答して下さい。
         # 質問
         {question}
 
         # 情報
-        {answer}
+        {context}
             
         # 回答
         """
