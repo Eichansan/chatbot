@@ -1,5 +1,8 @@
 version: '3'
 
+dotenv:
+  - ".env"
+
 vars:
   PROJECT_NAME: rag-chatbot
   DOCKER_COMPOSE_FILE: docker-compose.yml
@@ -10,8 +13,8 @@ tasks:
     desc: "Build Docker images"
     cmds:
       - docker compose -f {{.DOCKER_COMPOSE_FILE}} up --build -d
-      - docker exec -it ollama ollama run phi3:3.8b-mini-4k-instruct-q5_K_M
-      - docker exec -it ollama ollama pull mxbai-embed-large
+      - docker exec -it ollama ollama run $OLLAMA_LLM
+      - docker exec -it ollama ollama pull $OLLAMA_EMBEDDINGS_MODEL
 
   up:
     desc: "Start the Docker containers"
