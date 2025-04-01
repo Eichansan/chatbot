@@ -28,6 +28,7 @@ def rag_search(question):
 
     if results:
         context = "\n\n".join([f"{i+1}. {hit.payload['text']}" for i, hit in enumerate(results)])
+        # TODO プロンプトの内容を調整
         prompt = f"""
         次の質問について、3つの情報を基に簡潔に回答して下さい。
         # 質問

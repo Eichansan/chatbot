@@ -20,7 +20,7 @@ task up
 
 - wiki下にexample.txtを配置
 
-- ベクトルDB（Qdrant）に保存（仮）
+- 埋め込み（仮）
 
 ```bash
 python app/vector_store.py
