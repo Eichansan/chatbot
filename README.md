@@ -19,12 +19,7 @@ task up
 ## 実行
 
 - app/wiki下にexample.txtを配置
-
-- 実行（仮）
-
-```bash
-curl -X POST "http://localhost:8000/chat"     -H "Content-Type: application/json"     -d '{"question": "VPN接続の方法は？"}'
-```
+- Chainlit（http://localhost:3000）で実行するだけ 
 
 ## 停止
 ```bash

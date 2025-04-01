@@ -1,9 +1,21 @@
 version: "3.9"
 
 services:
+  chainlit:
+    container_name: chainlit
+    build: ./docker/chainlit
+    volumes:
+      - ./app:/var/www/app
+    restart: always
+    environment:
+      - FASTAPI_URL=${FASTAPI_URL}
+    ports:
+      - "3000:3000"
+    command: chainlit run /var/www/app/chainlit_app.py --host 0.0.0.0 --port 3000 -w
+
   fastapi:
     container_name: fastapi
-    build: ./docker
+    build: ./docker/fastapi
     volumes:
       - ./app:/var/www/app
     restart: always
@@ -15,6 +27,7 @@ services:
       - QDRANT_HOST=${QDRANT_HOST}
       - QDRANT_PORT=${QDRANT_PORT}
       - QDRANT_COLLECTION=${QDRANT_COLLECTION}
+      # 下二つなんで必要なのかわからねぇ...
       - OLLAMA_HOST=${OLLAMA_HOST}
       - OLLAMA_PORT=${OLLAMA_PORT}
       - OLLAMA_EMBEDDINGS_MODEL=${OLLAMA_EMBEDDINGS_MODEL}

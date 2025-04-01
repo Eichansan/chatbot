@@ -1,6 +1,8 @@
 .env
 
+.chainlit
 .mypy_cache/
+.files/
 __pycache__/
 
 wiki/*
