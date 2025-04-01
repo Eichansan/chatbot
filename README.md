@@ -18,18 +18,12 @@ task up
 
 ## 実行
 
-- wiki下にexample.txtを配置
-
-- 埋め込み（仮）
-
-```bash
-python app/vector_store.py
-```
+- app/wiki下にexample.txtを配置
 
 - 実行（仮）
 
 ```bash
-python app/main.py
+curl -X POST "http://localhost:8000/chat"     -H "Content-Type: application/json"     -d '{"question": "VPN接続の方法は？"}'
 ```
 
 ## 停止

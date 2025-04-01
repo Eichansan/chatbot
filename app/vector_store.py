@@ -5,13 +5,20 @@ import qdrant_client
 from qdrant_client.models import PointStruct, Distance, VectorParams
 
 # Qdrant クライアントの初期化
+print(Config.QDRANT_HOST, Config.QDRANT_PORT)
 qdrant = qdrant_client.QdrantClient(Config.QDRANT_HOST, port=Config.QDRANT_PORT)
 
 # コレクションを作成（既存の場合は削除して作り直す）
-qdrant.recreate_collection(
-    collection_name=Config.QDRANT_COLLECTION,
-    vectors_config=VectorParams(size=1024, distance=Distance.COSINE),
+collection_name = Config.QDRANT_COLLECTION
+if qdrant.collection_exists(collection_name):
+        qdrant.delete_collection(collection_name)
+        print(f"既存のコレクション '{collection_name}' が削除されました。")
+
+qdrant.create_collection(
+    collection_name=collection_name,
+    vectors_config={"size": 1024, "distance": "Cosine"}
 )
+print(f"新しいコレクション '{collection_name}' が作成されました。")
 
 
 def vectorize_text(text):
