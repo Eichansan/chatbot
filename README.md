@@ -6,22 +6,27 @@
 
 ## インストール
 
-```sh
+```bash
 task install
 ```
 
 ## 起動
 
-```sh
+```bash
 task up
 ```
 
+## 実行
+
+- app/wiki下にexample.txtを配置
+- Chainlit（http://localhost:3000）で実行するだけ 
+
 ## 停止
-```sh
+```bash
 task stop
 ```
 
 ## 削除
-```sh
+```bash
 task down
 ```

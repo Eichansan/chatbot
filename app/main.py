@@ -1,21 +1,38 @@
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
-from .rag_service import handle_query
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import Dict, Any
+from config import Config
+import ollama
+from rag_service import rag_search
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+class QuestionRequest(BaseModel):
+    question: str
 
-@app.get("/chat")
-async def chat_stream(query: str):
-    async def event_stream():
-        async for chunk in handle_query(query):
-            yield f"data: {chunk}\n\n"
-        yield "data: [DONE]\n\n"
-    return StreamingResponse(event_stream(), media_type="text/event-stream")
+def generate_response(prompt, model=Config.OLLAMA_LLM):
+    try:
+        stream = ollama.generate(
+            model=model,
+            prompt=prompt,
+            stream=True
+        )
+        
+        response = ""
+        for chunk in stream:
+            response += chunk['response']
+        
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/chat")
+async def generate_answer(request: QuestionRequest) -> Dict[str, Any]:
+    question = request.question
+    prompt = rag_search(question)
+
+    if prompt is None:
+        raise HTTPException(status_code=404, detail="適切な回答が見つかりませんでした。")
+
+    response = generate_response(prompt)
+    return {"question": question, "response": response}
