@@ -9,7 +9,7 @@ async def on_chat_start():
 
 # メッセージが送信されたときに実行される関数
 @cl.on_message 
-async def on_message(input_message):
+async def on_message(input_message: cl.Message):
     async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:  # タイムアウトを10秒に設定
         try:
             response = await client.post(
