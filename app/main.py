@@ -1,30 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict, Any
-from config import Config
-import ollama
+from ai_message import generate_response
 from rag_service import rag_search
 
 app = FastAPI()
 
 class QuestionRequest(BaseModel):
     question: str
-
-def generate_response(prompt, model=Config.OLLAMA_LLM):
-    try:
-        stream = ollama.generate(
-            model=model,
-            prompt=prompt,
-            stream=True
-        )
-        
-        response = ""
-        for chunk in stream:
-            response += chunk['response']
-        
-        return response
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/chat")
 async def generate_answer(request: QuestionRequest) -> Dict[str, Any]:
