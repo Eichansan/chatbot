@@ -1,7 +1,8 @@
 import chainlit as cl
-from config import Config
-import httpx
+from fastapi import HTTPException
 
+from ai_message import generate_response
+from rag_service import rag_search
 # チャットが開始されたときに実行される関数
 @cl.on_chat_start 
 async def on_chat_start():
@@ -10,21 +11,16 @@ async def on_chat_start():
 # メッセージが送信されたときに実行される関数
 @cl.on_message 
 async def on_message(input_message: cl.Message):
-    async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:  # タイムアウトを10秒に設定
-        try:
-            response = await client.post(
-                Config.FASTAPI_URL + "/chat",
-                json={"question": input_message.content}  # FastAPI のエンドポイントにリクエストを送信
-            )
+    prompt = rag_search(input_message.content)
+    if prompt is None:
+        raise HTTPException(status_code=404, detail="適切な回答が見つかりませんでした。")
 
-            data = response.json()  # 非同期でJSONを取得
-            answer = data.get("response", "No response received.")
-        
-        except httpx.HTTPStatusError as e:
-            answer = f"HTTP Error: {e.response.status_code} - {e.response.text}"
-        except httpx.TimeoutException:
-            answer = "The request timed out. Please try again later."
-        except Exception as e:
-            answer = f"Error: {str(e)}"
+    msg = cl.Message(content="")
+
+    stream = generate_response(prompt)
     
-    await cl.Message(content=answer).send() # チャットボットからの返答を送信する
+    async for token in stream:
+        if token:
+            await msg.stream_token(token)
+
+    await msg.update()
