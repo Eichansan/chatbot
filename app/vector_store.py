@@ -50,7 +50,7 @@ def load_text_file(filepath):
 
 
 # FAQ データをロード
-answers = load_text_file('./wiki/example.txt')
+answers = load_text_file('wiki/example.txt')
 
 # Qdrant にデータを保存
 points = []
