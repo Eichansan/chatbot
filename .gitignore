@@ -5,4 +5,4 @@
 .files/
 __pycache__/
 
-wiki/*
+app/wiki/*.txt
