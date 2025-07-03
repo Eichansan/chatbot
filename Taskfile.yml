@@ -16,11 +16,13 @@ tasks:
       - docker compose -f {{.DOCKER_COMPOSE_FILE}} up --build -d
       - docker exec -it ollama ollama run $OLLAMA_LLM
       - docker exec -it ollama ollama pull $OLLAMA_EMBEDDINGS_MODEL
+      - docker exec -it chainlit chainlit create-secret
       - docker exec -it fastapi python vector_store.py # 埋め込み
 
   up:
     desc: "Start the Docker containers"
     cmds:
+      - docker restart chainlit
       - docker compose -f {{.DOCKER_COMPOSE_FILE}} up -d
 
   stop:
