@@ -12,4 +12,5 @@ class Config:
 
     OLLAMA_EMBEDDINGS_MODEL = os.getenv("OLLAMA_EMBEDDINGS_MODEL")
     OLLAMA_LLM = os.getenv("OLLAMA_LLM")
+    CHAINLIT_AUTH_SECRET = os.getenv("CHAINLIT_AUTH_SECRET")
 config = Config()
